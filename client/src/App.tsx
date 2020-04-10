@@ -4,12 +4,16 @@ import { StoreProvider } from 'easy-peasy';
 
 import { store } from "store"
 import { StreamView } from "views";
+import TopNavBar from 'components/TopNavBar';
 
 const App = () => {
 
   return (
     <StoreProvider store={store}>
-      <StreamView />
+      <TopNavBar />
+      <div>
+        <StreamView />
+      </div>
     </StoreProvider>
   );
 }

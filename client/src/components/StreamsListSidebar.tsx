@@ -1,4 +1,4 @@
-import React from "react"
+import React from "react";
 
 import { Theme, createStyles, makeStyles } from '@material-ui/core/styles';
 
@@ -8,7 +8,8 @@ import { Drawer, IconButton } from "@material-ui/core";
 
 import { useStoreState, useStoreActions } from "hooks";
 
-import Toolbar from "./Toolbar"
+import Toolbar from "./Toolbar";
+import FollowedChannelsList from "./FollowedChannelsList";
 
 const drawerWidth = 340;
 
@@ -29,7 +30,8 @@ const useStyles = makeStyles((theme: Theme) =>
         },
         drawerPaper: {
             width: drawerWidth,
-            overflowX: 'hidden'
+            overflowX: 'hidden',
+            marginTop: '64px'
         },
         // necessary for content to be below app bar
         toolbar: theme.mixins.toolbar,
@@ -58,10 +60,11 @@ const StreamsListSidebar = () => {
             variant="persistent"
             anchor="left">
 
-            <Toolbar before={'left'} after={<IconButton onClick={() => closeSidebar()}>
+            <Toolbar before={'CHAINES SUIVIES'} after={<IconButton onClick={() => closeSidebar()}>
                 <ChevronLeftIcon />
             </IconButton>} />
 
+            <FollowedChannelsList />
         </Drawer>)
 }
 

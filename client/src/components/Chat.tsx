@@ -25,7 +25,7 @@ const useStyles = makeStyles((theme: Theme) =>
     createStyles({
         root: {
             display: 'flex',
-            zIndex: 1
+            zIndex: 1,
         },
         appBar: {
             width: `calc(100% - ${drawerWidth}px)`,
@@ -34,11 +34,12 @@ const useStyles = makeStyles((theme: Theme) =>
         drawer: {
             width: drawerWidth,
             flexShrink: 0,
-            overflowX: 'hidden'
+            overflowX: 'hidden',
         },
         drawerPaper: {
             width: drawerWidth,
-            overflowX: 'hidden'
+            overflowX: 'hidden',
+            marginTop: '64px'
         },
         // necessary for content to be below app bar
         toolbar: theme.mixins.toolbar,

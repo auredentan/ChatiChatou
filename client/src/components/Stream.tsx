@@ -20,6 +20,9 @@ const Stream = () => {
             <div style={{ display: "flex", alignItems: "center", flexGrow: 1, justifyContent: "flex-start" }}>
                 {!sidebarIsOpen && <IconButton onClick={() => openSidebar()}> <ChevronRightIcon /> </IconButton>}
             </div>
+            <div>
+                CENTER
+            </div>
             <div style={{ display: "flex", alignItems: "center", flexGrow: 1, justifyContent: "flex-end" }}>
                 {!chatIsOpen && <IconButton onClick={() => openChat()}> <ChevronLeftIcon /> </IconButton>}
             </div>
