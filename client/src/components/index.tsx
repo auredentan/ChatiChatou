@@ -1,3 +1,3 @@
-export { default as Chat } from "./Chat";
-export { default as Stream } from "./Stream"
-export { default as StreamsListSidebar } from "./StreamsListSidebar"
+export { default as Toolbar } from "./Toolbar"
+export { default as LeftSidebar } from "./LeftSidebar"
+export { default as TopNavBar } from "./TopNavBar";

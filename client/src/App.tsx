@@ -1,20 +1,60 @@
 import React from 'react';
 
-import { StoreProvider } from 'easy-peasy';
+import {
+  BrowserRouter as Router,
+  Switch,
+  Route,
+} from "react-router-dom";
 
-import { store } from "store"
-import { StreamView } from "views";
-import TopNavBar from 'components/TopNavBar';
+import {
+  createMuiTheme,
+  ThemeProvider,
+} from '@material-ui/core/styles';
+
+import { HomeView, StreamView } from "views";
+import { useStoreState } from 'hooks';
+import { LeftSidebar, TopNavBar } from 'components';
 
 const App = () => {
 
+  const darkMode = useStoreState(state => state.user.preferences.darkMode)
+
+  const theme = React.useMemo(
+    () =>
+      createMuiTheme({
+        palette: {
+          type: darkMode ? 'dark' : 'light',
+        },
+      }),
+    [darkMode],
+  );
+
   return (
-    <StoreProvider store={store}>
-      <TopNavBar />
-      <div>
-        <StreamView />
-      </div>
-    </StoreProvider>
+    <ThemeProvider theme={theme}>
+      <Router>
+        <>
+          <TopNavBar />
+          <LeftSidebar />
+          <Switch>
+            <Route path="/discover">
+              <div>Discover</div>
+            </Route>
+            <Route path="/followed">
+              <div>Followed</div>
+            </Route>
+            <Route path="/:id">
+              <StreamView />
+            </Route>
+            <Route path="/">
+              <HomeView />
+            </Route>
+            <Route path="*">
+              <div>No match</div>
+            </Route>
+          </Switch>
+        </>
+      </Router>
+    </ThemeProvider>
   );
 }
 

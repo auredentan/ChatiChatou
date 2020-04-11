@@ -3,7 +3,6 @@ import { fade, makeStyles, Theme, createStyles } from '@material-ui/core/styles'
 import AppBar from '@material-ui/core/AppBar';
 import Toolbar from '@material-ui/core/Toolbar';
 import IconButton from '@material-ui/core/IconButton';
-import Typography from '@material-ui/core/Typography';
 import InputBase from '@material-ui/core/InputBase';
 import Badge from '@material-ui/core/Badge';
 import MenuItem from '@material-ui/core/MenuItem';
@@ -14,7 +13,10 @@ import AccountCircle from '@material-ui/icons/AccountCircle';
 import MailIcon from '@material-ui/icons/Mail';
 import NotificationsIcon from '@material-ui/icons/Notifications';
 import MoreIcon from '@material-ui/icons/MoreVert';
-import { List, ListItem, ListSubheader, Divider } from '@material-ui/core';
+import { List, ListItem, ListSubheader, Divider, Tabs, Tab, Switch, FormControlLabel, ListItemIcon } from '@material-ui/core';
+import { useHistory, useLocation } from 'react-router-dom';
+import { useStoreState, useStoreActions } from 'hooks';
+import NightsStayIcon from '@material-ui/icons/NightsStay';
 
 const useStyles = makeStyles((theme: Theme) =>
     createStyles({
@@ -119,10 +121,12 @@ export default function TopNavBar() {
         setMobileMoreAnchorEl(event.currentTarget);
     };
 
+    const darkMode = useStoreState(state => state.user.preferences.darkMode)
+    const changeDarkMode = useStoreActions(actions => actions.user.changeDarkMode)
     const menuId = 'primary-search-account-menu';
     const renderProfileMenu = (
         <Menu
-            anchorEl={moreMenuAnchor}
+            anchorEl={anchorEl}
             anchorOrigin={{ vertical: 'top', horizontal: 'right' }}
             id={menuId}
             keepMounted
@@ -132,6 +136,16 @@ export default function TopNavBar() {
         >
             <MenuItem onClick={handleProfileMenuClose}>Profile</MenuItem>
             <MenuItem onClick={handleProfileMenuClose}>My account</MenuItem>
+            <MenuItem>
+                <ListItemIcon>
+                    <NightsStayIcon />
+                </ListItemIcon>
+                <FormControlLabel
+                    control={<Switch onChange={() => changeDarkMode()} checked={darkMode} />}
+                    label="Thème sombre"
+                    labelPlacement="start"
+                />
+            </MenuItem>
         </Menu>
     );
 
@@ -139,13 +153,12 @@ export default function TopNavBar() {
     const renderMoreMenu = (
         <Menu
             anchorEl={moreMenuAnchor}
-            anchorOrigin={{ vertical: 'bottom', horizontal: 'center' }}
             id={moreMenuId}
             keepMounted
             transformOrigin={{ vertical: 'bottom', horizontal: 'left' }}
             open={isMoreMenuOpen}
             onClose={handleMoreMenuClose}
-            style={{marginTop: '30px'}}
+            style={{ marginTop: '30px' }}
         >
             <List>
                 <ListSubheader>Général</ListSubheader>
@@ -209,6 +222,20 @@ export default function TopNavBar() {
         </Menu>
     );
 
+    const history = useHistory()
+    const location = useLocation()
+
+    const whichTabIsSelected = () => {
+        switch (location.pathname) {
+            case "/discover":
+                return 0
+            case "/followed":
+                return 1
+            default:
+                return undefined
+        }
+    }
+
     return (
         <div className={classes.grow}>
             <AppBar position="static">
@@ -217,13 +244,15 @@ export default function TopNavBar() {
                         edge="start"
                         className={classes.menuButton}
                         color="inherit"
-                        aria-label="open drawer"
+                        aria-label="Home"
+                        onClick={() => history.push("/")}
                     >
                         <MenuIcon />
                     </IconButton>
-                    <Typography className={classes.title} variant="h6" noWrap>
-                        Material-UI
-          </Typography>
+                    <Tabs indicatorColor="primary" value={whichTabIsSelected()}>
+                        <Tab label="Découvrir" id="/discover" onClick={() => { history.push('/discover') }} />
+                        <Tab label="Suivis" id="/followed" onClick={() => { history.push('/followed') }} />
+                    </Tabs>
                     <IconButton
                         edge="end"
                         aria-label="more"

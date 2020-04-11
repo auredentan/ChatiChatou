@@ -15,7 +15,7 @@ import { Divider, IconButton, CircularProgress, Popover } from '@material-ui/cor
 
 import { useStoreState, useStoreActions } from 'hooks';
 
-import Toolbar from "./Toolbar"
+import { Toolbar } from "components"
 
 var wsUri = process.env.NODE_ENV === "development" ? 'ws://localhost:8080/ws/' : (window.location.protocol === 'https:' ? 'wss://' : 'ws://') + window.location.host + '/ws/';
 
@@ -68,10 +68,10 @@ const Chat = () => {
     const open = Boolean(anchorEl);
     const id = open ? 'simple-popover' : undefined;
 
-    const chatIsOpen = useStoreState(state => state.stream.chatOpen)
-    const closeChat = useStoreActions(actions => actions.stream.closeChat)
+    const chatIsOpen = useStoreState(state => state.streamView.chatOpen)
+    const closeChat = useStoreActions(actions => actions.streamView.closeChat)
 
-    const [sendMessage, lastMessage, readyState, getWebSocket] = useWebSocket(wsUri, STATIC_OPTIONS);
+    const [sendMessage, lastMessage, readyState] = useWebSocket(wsUri, STATIC_OPTIONS);
 
     const [messages, setMessages] = useState<Array<any>>([])
 

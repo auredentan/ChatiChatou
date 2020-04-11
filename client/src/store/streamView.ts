@@ -1,12 +1,12 @@
 import { Action, action } from "easy-peasy";
 
-export interface StreamModel {
+export interface StreamView {
   chatOpen: boolean;
-  openChat: Action<StreamModel>
-  closeChat: Action<StreamModel>
+  openChat: Action<StreamView>
+  closeChat: Action<StreamView>
 }
 
-const streamModel: StreamModel = {
+const streamView: StreamView = {
   chatOpen: true,
   openChat: action((state) => {
     state.chatOpen = true
@@ -16,4 +16,4 @@ const streamModel: StreamModel = {
   })
 };
 
-export default streamModel;
+export default streamView;

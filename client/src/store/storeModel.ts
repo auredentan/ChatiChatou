@@ -1,17 +1,17 @@
-import userModel, { UserModel } from "./user/model";
-import streamModel, { StreamModel } from "./stream/model";
-import globalModel, { GlobalModel } from "./global/model";
+import userModel, { User } from "./user";
+import streamView, { StreamView } from "./streamView";
+import global, { Global } from "./global";
 
 export interface StoreModel {
-  global: GlobalModel,
-  user: UserModel;
-  stream: StreamModel;
+  global: Global;
+  user: User;
+  streamView: StreamView;
 }
 
 const storeModel: StoreModel = {
-  global: globalModel,
+  global: global,
   user: userModel,
-  stream: streamModel
+  streamView: streamView
 };
 
 export default storeModel;
