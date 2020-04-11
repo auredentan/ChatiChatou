@@ -1,7 +1,7 @@
 [package]
-name = "websocket-broker-example"
+name = "twitch-clone"
 version = "0.1.0"
-authors = ["Chris Ricketts <chris.ricketts@steribar.com>"]
+authors = ["Dentan Aurélien <aurelien.dentan@gmail.com>"]
 edition = "2018"
 
 [[bin]]
