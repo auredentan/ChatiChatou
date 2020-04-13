@@ -1,0 +1,24 @@
+{
+    "users": [
+        {
+            "id": 1,
+            "name": "truc",
+            "followedChannels": [
+                {
+                    "name": "test1",
+                    "avatarUrl": "https://static-cdn.jtvnw.net/jtv_user_pictures/91e7b44f-d4e8-4121-a19c-e9266358a08a-profile_image-70x70.png",
+                    "currentViewerCount": 20,
+                    "currentStreamSection": "WoW",
+                    "isOnline": true
+                },
+                {
+                    "name": "test2",
+                    "avatarUrl": "https://static-cdn.jtvnw.net/jtv_user_pictures/91e7b44f-d4e8-4121-a19c-e9266358a08a-profile_image-70x70.png",
+                    "currentViewerCount": 0,
+                    "currentStreamSection": "LoL",
+                    "isOnline": false
+                }
+            ]
+        }
+    ]
+}

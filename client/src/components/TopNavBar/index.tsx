@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { fade, makeStyles, Theme, createStyles } from '@material-ui/core/styles';
 import AppBar from '@material-ui/core/AppBar';
 import Toolbar from '@material-ui/core/Toolbar';
@@ -13,10 +13,11 @@ import AccountCircle from '@material-ui/icons/AccountCircle';
 import MailIcon from '@material-ui/icons/Mail';
 import NotificationsIcon from '@material-ui/icons/Notifications';
 import MoreIcon from '@material-ui/icons/MoreVert';
-import { List, ListItem, ListSubheader, Divider, Tabs, Tab, Switch, FormControlLabel, ListItemIcon } from '@material-ui/core';
+import { List, ListItem, ListSubheader, Divider, Tabs, Tab, Switch, FormControlLabel, ListItemIcon, Button } from '@material-ui/core';
 import { useHistory, useLocation } from 'react-router-dom';
 import { useStoreState, useStoreActions } from 'hooks';
 import NightsStayIcon from '@material-ui/icons/NightsStay';
+import ConnectModal from './ConnectModal';
 
 const useStyles = makeStyles((theme: Theme) =>
     createStyles({
@@ -123,6 +124,7 @@ export default function TopNavBar() {
 
     const darkMode = useStoreState(state => state.user.preferences.darkMode)
     const changeDarkMode = useStoreActions(actions => actions.user.changeDarkMode)
+    const logout = useStoreActions(actions => actions.user.logout)
     const menuId = 'primary-search-account-menu';
     const renderProfileMenu = (
         <Menu
@@ -145,6 +147,12 @@ export default function TopNavBar() {
                     label="Thème sombre"
                     labelPlacement="start"
                 />
+            </MenuItem>
+            <MenuItem onClick={() => {
+                logout()
+                handleProfileMenuClose()
+            }}>
+                Logout
             </MenuItem>
         </Menu>
     );
@@ -180,6 +188,7 @@ export default function TopNavBar() {
         </Menu>
     )
 
+    const isAuthenticated = useStoreState(state => state.user.isAuthenticated)
 
     const mobileMenuId = 'primary-search-account-menu-mobile';
     const renderMobileMenu = (
@@ -192,22 +201,25 @@ export default function TopNavBar() {
             open={isMobileMenuOpen}
             onClose={handleMobileMenuClose}
         >
-            <MenuItem>
-                <IconButton aria-label="show 4 new mails" color="inherit">
-                    <Badge badgeContent={4} color="secondary">
-                        <MailIcon />
-                    </Badge>
-                </IconButton>
-                <p>Messages</p>
-            </MenuItem>
-            <MenuItem>
-                <IconButton aria-label="show 11 new notifications" color="inherit">
-                    <Badge badgeContent={11} color="secondary">
-                        <NotificationsIcon />
-                    </Badge>
-                </IconButton>
-                <p>Notifications</p>
-            </MenuItem>
+            {isAuthenticated && 
+                <MenuItem>
+                    <IconButton aria-label="show 4 new mails" color="inherit">
+                        <Badge badgeContent={4} color="secondary">
+                            <MailIcon />
+                        </Badge>
+                    </IconButton>
+                    <p>Messages</p>
+                </MenuItem>
+            }
+                <MenuItem>
+                    <IconButton aria-label="show 11 new notifications" color="inherit">
+                        <Badge badgeContent={11} color="secondary">
+                            <NotificationsIcon />
+                        </Badge>
+                    </IconButton>
+                    <p>Notifications</p>
+                </MenuItem>
+            
             <MenuItem onClick={handleProfileMenuOpen}>
                 <IconButton
                     aria-label="account of current user"
@@ -232,10 +244,12 @@ export default function TopNavBar() {
             case "/followed":
                 return 1
             default:
-                return undefined
+                return 2
         }
     }
 
+    const [connectModalIsOpen, setConnectModalIsOpen] = useState(false)
+    const [connectModalTab, setConnectModalTab] = useState(0)
     return (
         <div className={classes.grow}>
             <AppBar position="static">
@@ -279,16 +293,32 @@ export default function TopNavBar() {
                     </div>
                     <div className={classes.grow} />
                     <div className={classes.sectionDesktop}>
-                        <IconButton aria-label="show 4 new mails" color="inherit">
-                            <Badge badgeContent={4} color="secondary">
-                                <MailIcon />
-                            </Badge>
-                        </IconButton>
-                        <IconButton aria-label="show 17 new notifications" color="inherit">
-                            <Badge badgeContent={17} color="secondary">
-                                <NotificationsIcon />
-                            </Badge>
-                        </IconButton>
+                        {isAuthenticated &&
+                            <>
+                                <IconButton aria-label="show 4 new mails" color="inherit">
+                                    <Badge badgeContent={4} color="secondary">
+                                        <MailIcon />
+                                    </Badge>
+                                </IconButton>
+                                <IconButton aria-label="show 17 new notifications" color="inherit">
+                                    <Badge badgeContent={17} color="secondary">
+                                        <NotificationsIcon />
+                                    </Badge>
+                                </IconButton>
+                            </>
+                        }
+                        {!isAuthenticated &&
+                            <>
+                                <Button onClick={() => {
+                                    setConnectModalTab(0)
+                                    setConnectModalIsOpen(true)
+                                }}>
+                                    Connect</Button>
+                                <Button onClick={() => {
+                                    setConnectModalTab(1)
+                                    setConnectModalIsOpen(true)
+                                }}>Sign In</Button>
+                            </>}
                         <IconButton
                             edge="end"
                             aria-label="account of current user"
@@ -299,6 +329,7 @@ export default function TopNavBar() {
                         >
                             <AccountCircle />
                         </IconButton>
+
                     </div>
                     <div className={classes.sectionMobile}>
                         <IconButton
@@ -316,6 +347,11 @@ export default function TopNavBar() {
             {renderMobileMenu}
             {renderProfileMenu}
             {renderMoreMenu}
+            <ConnectModal
+                tab={connectModalTab}
+                open={connectModalIsOpen}
+                onClose={() => setConnectModalIsOpen(false)}
+            />
         </div>
     );
 }

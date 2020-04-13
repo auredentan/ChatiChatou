@@ -70,9 +70,9 @@ const useStyles = makeStyles((theme: Theme) =>
 const LeftSidebar = () => {
     const classes = useStyles()
 
-    const isOpen = useStoreState(state => state.global.leftSidebarIsOpen)
-    const closeSidebar = useStoreActions(actions => actions.global.closeLeftSidebar)
-    const openSidebar = useStoreActions(actions => actions.global.openLeftSidebar)
+    const isOpen = useStoreState(state => state.globalState.leftSidebarIsOpen)
+    const closeSidebar = useStoreActions(actions => actions.globalState.closeLeftSidebar)
+    const openSidebar = useStoreActions(actions => actions.globalState.openLeftSidebar)
 
     return (
         <Drawer

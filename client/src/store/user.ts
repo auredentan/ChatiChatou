@@ -1,40 +1,57 @@
-import { Thunk, thunk, Action, action } from "easy-peasy"
+import { Action, action, Thunk, thunk } from "easy-peasy"
 
 import { Channel } from "./channel"
+import { Injections, StoreModel } from "./storeModel";
 
 interface UserPreferences {
   darkMode: boolean
 }
 const baseUserPreferences: UserPreferences = {
-  darkMode: false
+  darkMode: JSON.parse(localStorage.getItem("darkMode") || 'false')
 }
 
 export interface User {
-  preferences: UserPreferences,
+  isAuthenticated: boolean
+  loading: boolean
+  name: string | undefined
+  preferences: UserPreferences
   followedChannels: Array<Channel> | undefined
 
   changeDarkMode: Action<User>
-  setFollowedChannels: Action<User, Array<Channel> | undefined>
+  setUser: Action<User, any>
+  logout: Action<User>
 
-  fetchFollowedChannels: Thunk<User>
+  getMe: Thunk<User, any, Injections, StoreModel>
 }
 
 const user: User = {
+  isAuthenticated: false,
+  loading: true,
+  name: 'anonymous',
   preferences: baseUserPreferences,
   followedChannels: undefined,
 
-  changeDarkMode: action((state) => {state.preferences.darkMode = !state.preferences.darkMode}),
-  setFollowedChannels: action((state, payload) => {
-    state.followedChannels = payload
+  // Actions
+  changeDarkMode: action((state) => {
+    state.preferences.darkMode = !state.preferences.darkMode
+    localStorage.setItem("darkMode", JSON.stringify(!state.preferences.darkMode))
+  }),
+  setUser: action((state, payload) => {
+    state.isAuthenticated = true
+    state.followedChannels = payload.followedChannels
+    state.name = payload.name
+  }),
+  logout: action((state) => {
+    state.isAuthenticated = false
   }),
 
-  fetchFollowedChannels: thunk(async (actions) => {
-    const followedChannels = [
-      { name: 'test1', avatarUrl: 'https://static-cdn.jtvnw.net/jtv_user_pictures/91e7b44f-d4e8-4121-a19c-e9266358a08a-profile_image-70x70.png', currentViewerCount: 20, currentStreamSection: "WoW", isOnline: true },
-      { name: 'test2', avatarUrl: 'https://static-cdn.jtvnw.net/jtv_user_pictures/91e7b44f-d4e8-4121-a19c-e9266358a08a-profile_image-70x70.png', currentViewerCount: 0, currentStreamSection: "LoL", isOnline: false }
-    ]
-    actions.setFollowedChannels(followedChannels)
+  getMe: thunk(async (actions, payload, { injections, getStoreActions }) => {
+    const { userService } = injections
+    const user = await userService.getMe()
+    actions.setUser(user)
+    getStoreActions().globalState.setInitialLoading(false)
   })
+
 };
 
 export default user;

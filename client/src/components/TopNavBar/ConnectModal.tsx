@@ -1,0 +1,48 @@
+import React, { useState, useEffect } from "react"
+import { Dialog, DialogTitle, Tabs, Tab } from "@material-ui/core"
+
+interface TabPanelProps {
+    value: number
+    index: number
+}
+
+const TabPanel: React.FC<TabPanelProps> = ({ value, index, children }) => {
+    return (
+        <>
+            {value === index && <>{children}</>}
+        </>
+    )
+}
+
+interface ConnectModalProps {
+    tab: number
+    open: boolean
+    onClose: any
+}
+
+const ConnectModal: React.FC<ConnectModalProps> = ({
+    open, onClose, tab
+}) => {
+
+    const [selectedTab, setSelectedTab] = useState(0)
+
+    useEffect(() => {
+        if (tab) {
+            setSelectedTab(tab)
+        }
+    }, [tab])
+
+    return (
+        <Dialog open={open} onClose={onClose}>
+            <DialogTitle>Se connecter à Twitch</DialogTitle>
+            <Tabs centered value={selectedTab} onChange={(event: any, index: number) => setSelectedTab(index)}>
+                <Tab label="Se connecter" />
+                <Tab label="S'inscrire" />
+            </Tabs>
+            <TabPanel value={selectedTab} index={0}>Se connecter content</TabPanel>
+            <TabPanel value={selectedTab} index={1}>Other</TabPanel>
+        </Dialog>
+    )
+}
+
+export default ConnectModal

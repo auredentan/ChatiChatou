@@ -5,22 +5,17 @@ import { useHistory } from "react-router-dom"
 
 const FollowedChannelsList = () => {
 
-    const leftSidebarIsOpen = useStoreState(state => state.global.leftSidebarIsOpen)
+    const leftSidebarIsOpen = useStoreState(state => state.globalState.leftSidebarIsOpen)
 
     const followedChannels = useStoreState(state => state.user.followedChannels)
-    const fetchFollowedChannels = useStoreActions(actions => actions.user.fetchFollowedChannels)
+
+    console.log(followedChannels)
 
     const history = useHistory()
 
-    useEffect(() => {
-        if (!followedChannels) {
-            fetchFollowedChannels()
-        }
-    }, [followedChannels, fetchFollowedChannels])
-
     return (
         <List>
-            {followedChannels && followedChannels.map((channel: any) => {
+            {(followedChannels && followedChannels.length > 0) && followedChannels.map((channel: any) => {
                 return (
                     <ListItem key={channel.name} button onClick={() => history.push(`/${channel.name}`)} disabled={!channel.isOnline}>
                         <ListItemAvatar>
