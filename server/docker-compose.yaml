@@ -1,0 +1,19 @@
+version: '3'
+
+services:
+  redis:
+    image: redis
+    container_name: redis
+    ports:
+      - "8082:6379"
+      
+  postgres:
+    image: postgres
+    ports:
+      - "8083:5432"
+    volumes:
+      - db-data:/var/lib/postgresql/data
+
+volumes:
+  db-data:
+    driver: local

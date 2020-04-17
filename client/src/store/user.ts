@@ -2,6 +2,7 @@ import { Action, action, Thunk, thunk } from "easy-peasy"
 
 import { Channel } from "./channel"
 import { Injections, StoreModel } from "./storeModel";
+import { ILoginData } from "services/userService"
 
 interface UserPreferences {
   darkMode: boolean
@@ -21,6 +22,7 @@ export interface User {
   setUser: Action<User, any>
   logout: Action<User>
 
+  login: Thunk<User, ILoginData, Injections, any>
   getMe: Thunk<User, any, Injections, StoreModel>
 }
 
@@ -45,10 +47,20 @@ const user: User = {
     state.isAuthenticated = false
   }),
 
+
+  login: thunk(async (actions, payload, { injections }) => {
+    const { userService } = injections
+    const { data, status } = await userService.login(payload)
+    if (status === 204) {
+      actions.getMe()
+    }
+  }),
   getMe: thunk(async (actions, payload, { injections, getStoreActions }) => {
     const { userService } = injections
-    const user = await userService.getMe()
-    actions.setUser(user)
+    const { data: user, status } = await userService.getMe()
+    if (status === 200) {
+      actions.setUser(user)
+    }
     getStoreActions().globalState.setInitialLoading(false)
   })
 

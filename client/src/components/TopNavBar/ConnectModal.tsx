@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from "react"
-import { Dialog, DialogTitle, Tabs, Tab } from "@material-ui/core"
+import { Dialog, DialogTitle, Tabs, Tab, TextField } from "@material-ui/core"
+import SignUp from "views/ConnectView/SignUp"
 
 interface TabPanelProps {
     value: number
@@ -17,7 +18,7 @@ const TabPanel: React.FC<TabPanelProps> = ({ value, index, children }) => {
 interface ConnectModalProps {
     tab: number
     open: boolean
-    onClose: any
+    onClose: any,
 }
 
 const ConnectModal: React.FC<ConnectModalProps> = ({
@@ -39,8 +40,13 @@ const ConnectModal: React.FC<ConnectModalProps> = ({
                 <Tab label="Se connecter" />
                 <Tab label="S'inscrire" />
             </Tabs>
-            <TabPanel value={selectedTab} index={0}>Se connecter content</TabPanel>
-            <TabPanel value={selectedTab} index={1}>Other</TabPanel>
+            <TabPanel value={selectedTab} index={0}>
+                Se connecter content
+                
+            </TabPanel>
+            <TabPanel value={selectedTab} index={1}>
+                <SignUp />
+            </TabPanel>
         </Dialog>
     )
 }

@@ -1,160 +1,70 @@
 #[macro_use]
-extern crate log;
+extern crate diesel;
 
-use actix::fut;
-use actix::prelude::*;
-use actix_broker::BrokerIssue;
-use actix_files::Files;
-use actix_web::{web, App, Error, HttpRequest, HttpResponse, HttpServer};
-use actix_web_actors::ws;
+use crate::models::AppState;
+use actix_cors::Cors;
+use actix_identity::{CookieIdentityPolicy, IdentityService};
+use actix_web::{middleware, web, App, HttpServer};
+use diesel::prelude::*;
+use diesel::r2d2::{self, ConnectionManager};
 
-use serde_json::json;
+mod auth_handler;
+// mod email_service;
+mod errors;
+// mod invitation_handler;
+mod models;
+// mod register_handler;
+mod schema;
+mod utils;
+use slog::info;
 
-mod server;
-use server::*;
+#[actix_rt::main]
+async fn main() -> std::io::Result<()> {
+    dotenv::dotenv().ok();
+    std::env::set_var(
+        "RUST_LOG",
+        "simple-auth-server=debug,actix_web=info,actix_server=info",
+    );
 
-fn chat_route(req: HttpRequest, stream: web::Payload) -> Result<HttpResponse, Error> {
-    ws::start(WsChatSession::default(), &req, stream)
-}
+    let database_url = std::env::var("DATABASE_URL").expect("DATABASE_URL must be set");
 
-#[derive(Default)]
-struct WsChatSession {
-    id: usize,
-    room: String,
-    name: Option<String>,
-}
+    // create db connection pool
+    let manager = ConnectionManager::<PgConnection>::new(database_url);
+    let pool: models::Pool = r2d2::Pool::builder()
+        .build(manager)
+        .expect("Failed to create pool.");
+    let domain: String = std::env::var("DOMAIN").unwrap_or_else(|_| "localhost:3000".to_string());
 
-impl WsChatSession {
-    fn join_room(&mut self, room_name: &str, ctx: &mut ws::WebsocketContext<Self>) {
-        let room_name = room_name.to_owned();
-        // First send a leave message for the current room
-        let leave_msg = LeaveRoom(self.room.clone(), self.id);
-        // issue_sync comes from having the `BrokerIssue` trait in scope.
-        self.issue_system_sync(leave_msg, ctx);
-        // Then send a join message for the new room
-        let join_msg = JoinRoom(
-            room_name.to_owned(),
-            self.name.clone(),
-            ctx.address().recipient(),
-        );
-
-        WsChatServer::from_registry()
-            .send(join_msg)
-            .into_actor(self)
-            .then(|id, act, _ctx| {
-                if let Ok(id) = id {
-                    act.id = id;
-                    act.room = room_name;
-                }
-
-                fut::ok(())
-            })
-            .spawn(ctx);
-    }
-
-    fn list_rooms(&mut self, ctx: &mut ws::WebsocketContext<Self>) {
-        WsChatServer::from_registry()
-            .send(ListRooms)
-            .into_actor(self)
-            .then(|res, _, ctx| {
-                if let Ok(rooms) = res {
-                    for room in rooms {
-                        ctx.text(room);
-                    }
-                }
-                fut::ok(())
-            })
-            .spawn(ctx);
-    }
-
-    fn send_msg(&self, msg: &str) {
-        let content = json!({
-            "user": self.name.clone().unwrap_or_else(|| "anon".to_string()),
-            "message": msg
-        });
-        let msg = SendMessage(self.room.clone(), self.id, content.to_string());
-        // issue_async comes from having the `BrokerIssue` trait in scope.
-        self.issue_system_async(msg);
-    }
-}
-
-impl Actor for WsChatSession {
-    type Context = ws::WebsocketContext<Self>;
-
-    fn started(&mut self, ctx: &mut Self::Context) {
-        self.join_room("Main", ctx);
-    }
-
-    fn stopped(&mut self, _ctx: &mut Self::Context) {
-        info!(
-            "WsChatSession closed for {}({}) in room {}",
-            self.name.clone().unwrap_or_else(|| "anon".to_string()),
-            self.id,
-            self.room
-        );
-    }
-}
-
-impl Handler<ChatMessage> for WsChatSession {
-    type Result = ();
-
-    fn handle(&mut self, msg: ChatMessage, ctx: &mut Self::Context) {
-        ctx.text(msg.0);
-    }
-}
-
-impl StreamHandler<ws::Message, ws::ProtocolError> for WsChatSession {
-    fn handle(&mut self, msg: ws::Message, ctx: &mut Self::Context) {
-        debug!("WEBSOCKET MESSAGE: {:?}", msg);
-        match msg {
-            ws::Message::Text(text) => {
-                let msg = text.trim();
-                if msg.starts_with('/') {
-                    let mut command = msg.splitn(2, ' ');
-                    match command.next() {
-                        Some("/list") => self.list_rooms(ctx),
-                        Some("/join") => {
-                            if let Some(room_name) = command.next() {
-                                self.join_room(room_name, ctx);
-                            } else {
-                                ctx.text("!!! room name is required");
-                            }
-                        }
-                        Some("/name") => {
-                            if let Some(name) = command.next() {
-                                self.name = Some(name.to_owned());
-                                ctx.text(format!("name changed to: {}", name));
-                            } else {
-                                ctx.text("!!! name is required");
-                            }
-                        }
-                        _ => ctx.text(format!("!!! unknown command: {:?}", msg)),
-                    }
-                    return;
-                }
-                self.send_msg(msg);
-            }
-            ws::Message::Close(_) => {
-                ctx.stop();
-            }
-            _ => {}
-        }
-    }
-}
-
-fn main() -> std::io::Result<()> {
-    let sys = actix::System::new("websocket-broker-example");
-    simple_logger::init_with_level(log::Level::Info).unwrap();
+    let log = utils::configure_log();
+    env_logger::init();
+    info!(log, "Starting server at http://localhost:8080");
 
     HttpServer::new(move || {
         App::new()
-            .service(web::resource("/ws/").to(chat_route))
-            .service(Files::new("/", "./static/").index_file("index.html"))
+            .data(AppState {
+                pool: pool.clone(),
+                log: log.clone(),
+            })
+            .wrap(Cors::new().max_age(3600).finish())
+            .wrap(middleware::Logger::default())
+            .wrap(IdentityService::new(
+                CookieIdentityPolicy::new(utils::SECRET_KEY.as_bytes())
+                    .name("auth")
+                    .domain(domain.as_str())
+                    .max_age_time(chrono::Duration::days(1))
+                    .secure(false), // this can only be true if you have https
+            ))
+            .data(web::JsonConfig::default().limit(4096))
+            .service(
+                web::scope("/api").service(
+                    web::resource("/auth")
+                        .route(web::post().to(auth_handler::login))
+                        .route(web::get().to(auth_handler::get_me))
+                        .route(web::delete().to(auth_handler::logout)),
+                ),
+            )
     })
-    .bind("0.0.0.0:8080")
-    .unwrap()
-    .start();
-
-    info!("Started http server 0.0.0.0:8080");
-    sys.run()
+    .bind("localhost:8080")?
+    .run()
+    .await
 }
