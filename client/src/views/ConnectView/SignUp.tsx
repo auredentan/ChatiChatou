@@ -8,18 +8,16 @@ const SignUp = () => {
         email: '',
         password: ''
     })
-    const login = useStoreActions(actions => actions.user.login)
+    const register = useStoreActions(actions => actions.user.register)
     const setSignupField = (field: string, value: string) => {
         setSignupData({...signupData, [field]: value})
     }
-
-    
 
     return (
         <>
             <TextField label="Email" value={signupData.email} onChange={(event: any) => setSignupField("email", event.target.value)} />
             <TextField label="Password" value={signupData.password} onChange={(event: any) => setSignupField("password", event.target.value)} />
-            <Button onClick={() => login(signupData)}>S'inscrire</Button>
+            <Button onClick={() => register(signupData)}>S'inscrire</Button>
         </>
     )
 }

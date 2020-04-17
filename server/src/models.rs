@@ -1,7 +1,6 @@
 use super::schema::*;
 use diesel::{r2d2::ConnectionManager, PgConnection};
 use serde::{Deserialize, Serialize};
-use slog;
 
 // type alias to use in multiple places
 pub type Pool = r2d2::Pool<ConnectionManager<PgConnection>>;
@@ -9,7 +8,6 @@ pub type Pool = r2d2::Pool<ConnectionManager<PgConnection>>;
 #[derive(Clone)]
 pub struct AppState {
     pub pool: Pool,
-    pub log: slog::Logger,
 }
 
 #[derive(Debug, Serialize, Deserialize, Queryable, Insertable)]

@@ -22,6 +22,7 @@ export interface User {
   setUser: Action<User, any>
   logout: Action<User>
 
+  register: Thunk<User, ILoginData, Injections, any>
   login: Thunk<User, ILoginData, Injections, any>
   getMe: Thunk<User, any, Injections, StoreModel>
 }
@@ -48,10 +49,17 @@ const user: User = {
   }),
 
 
+  register: thunk(async (actions, payload, { injections }) => {
+    const { userService } = injections
+    const { data, status } = await userService.register(payload)
+    if (status === 200) {
+      actions.login(payload)
+    }
+  }),
   login: thunk(async (actions, payload, { injections }) => {
     const { userService } = injections
     const { data, status } = await userService.login(payload)
-    if (status === 204) {
+    if (status === 200) {
       actions.getMe()
     }
   }),

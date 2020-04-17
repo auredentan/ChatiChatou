@@ -1,9 +1,10 @@
 use std::pin::Pin;
 
+use log::info;
+
 use actix_identity::Identity;
 use actix_web::{
-    dev::Payload, error::BlockingError, web, Error, FromRequest, HttpRequest,
-    HttpResponse,
+    dev::Payload, error::BlockingError, web, Error, FromRequest, HttpRequest, HttpResponse,
 };
 use diesel::prelude::*;
 use diesel::PgConnection;
@@ -13,7 +14,6 @@ use serde::Deserialize;
 use crate::errors::ServiceError;
 use crate::models::{AppState, Pool, SlimUser, User};
 use crate::utils::verify;
-use slog::{info, o};
 
 #[derive(Debug, Deserialize)]
 pub struct AuthData {
@@ -53,7 +53,6 @@ pub async fn login(
     id: Identity,
     state: web::Data<AppState>,
 ) -> Result<HttpResponse, ServiceError> {
-
     let res = web::block(move || query(auth_data.into_inner(), state.pool.clone())).await;
 
     match res {
@@ -69,8 +68,14 @@ pub async fn login(
     }
 }
 
-pub async fn get_me(logged_user: LoggedUser) -> HttpResponse {
-    HttpResponse::Ok().json(logged_user)
+pub async fn get_me(id: Identity) -> Result<HttpResponse, ServiceError> {
+    info!(".....");
+    if let Some(id) = id.identity() {
+        info!("{}", format!("Welcome! {}", id));
+        Ok(HttpResponse::Ok().finish())
+    } else {
+        Err(ServiceError::Unauthorized)
+    }
 }
 
 /// Diesel query
