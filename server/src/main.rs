@@ -45,16 +45,15 @@ async fn main() -> std::io::Result<()> {
     HttpServer::new(move || {
         App::new()
             .data(AppState { pool: pool.clone() })
-            .wrap(Cors::new().max_age(3600).finish())
             .wrap(middleware::Logger::default())
             .wrap(IdentityService::new(
                 CookieIdentityPolicy::new(utils::SECRET_KEY.as_bytes())
-                    .name("auth")
-                    .domain(domain.as_str())
-                    .max_age_time(chrono::Duration::days(1))
+                    .name("auth-cookie")
+                    .max_age_time(chrono::Duration::hours(1))
                     .secure(false), // this can only be true if you have https
             ))
             .data(web::JsonConfig::default().limit(4096))
+            .wrap(Cors::new().max_age(3600).finish())
             .service(
                 web::scope("/api")
                     .service(

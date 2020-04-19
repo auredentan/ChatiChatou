@@ -58,7 +58,8 @@ pub async fn login(
     match res {
         Ok(user) => {
             let user_string = serde_json::to_string(&user).unwrap();
-            id.remember(user_string);
+            info!("{}", format!("Remebering {}", user_string));
+            id.remember(user_string.to_owned());
             Ok(HttpResponse::Ok().finish())
         }
         Err(err) => match err {
@@ -68,10 +69,10 @@ pub async fn login(
     }
 }
 
-pub async fn get_me(id: Identity) -> Result<HttpResponse, ServiceError> {
-    info!(".....");
-    if let Some(id) = id.identity() {
-        info!("{}", format!("Welcome! {}", id));
+pub async fn get_me(me: LoggedUser) -> Result<HttpResponse, ServiceError> {
+    info!("..... {:?}", me);
+    if true {
+        info!("{}", format!("Welcome!"));
         Ok(HttpResponse::Ok().finish())
     } else {
         Err(ServiceError::Unauthorized)
