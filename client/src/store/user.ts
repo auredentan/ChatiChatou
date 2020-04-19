@@ -70,6 +70,7 @@ const user: User = {
       actions.setUser(user)
     }
     getStoreActions().globalState.setInitialLoading(false)
+    getStoreActions().connectView.setIsConnectModalOpen(false)
   })
 
 };
