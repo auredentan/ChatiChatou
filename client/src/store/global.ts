@@ -1,19 +1,19 @@
 import { Action, action } from "easy-peasy"
 
-export interface Global {
-    leftSidebarIsOpen: boolean
+export interface GlobalState {
     initialLoading: boolean
+    setInitialLoading: Action<GlobalState, boolean>
 
-    setInitialLoading: Action<Global, boolean>
-    closeLeftSidebar: Action<Global>
-    openLeftSidebar: Action<Global>
+    leftSidebarIsOpen: boolean
+    closeLeftSidebar: Action<GlobalState>
+    openLeftSidebar: Action<GlobalState>
 }
 
-const globalState: Global = {
-    leftSidebarIsOpen: true,
+const globalState: GlobalState = {
     initialLoading: true,
-
     setInitialLoading: action((state, payload) => { state.initialLoading = payload }),
+
+    leftSidebarIsOpen: true,
     closeLeftSidebar: action((state) => { state.leftSidebarIsOpen = false }),
     openLeftSidebar: action((state) => { state.leftSidebarIsOpen = true })
 };

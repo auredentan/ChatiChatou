@@ -1,17 +1,17 @@
 import { Action, action } from 'easy-peasy';
 
-export interface ConnectView {
+export interface ConnectViewState {
 	isConnectModalOpen: boolean;
 	choosenTab: number;
 	loading: boolean;
 
-    setTab: Action<ConnectView, number>;
-    setIsConnectModalOpen: Action<ConnectView, boolean>;
-	openSignIn: Action<ConnectView>;
-	openSignUp: Action<ConnectView>;
+    setTab: Action<ConnectViewState, number>;
+    setIsConnectModalOpen: Action<ConnectViewState, boolean>;
+	openSignIn: Action<ConnectViewState>;
+	openSignUp: Action<ConnectViewState>;
 }
 
-const connectView: ConnectView = {
+const connectViewState: ConnectViewState = {
 	isConnectModalOpen: false,
 	choosenTab: 0,
 	loading: false,
@@ -32,4 +32,4 @@ const connectView: ConnectView = {
 	}),
 };
 
-export default connectView;
+export default connectViewState;

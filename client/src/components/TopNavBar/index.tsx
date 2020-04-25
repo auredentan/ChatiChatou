@@ -272,10 +272,10 @@ export default function TopNavBar() {
 	};
 
 	const openSignIn = useStoreActions(
-		(actions) => actions.connectView.openSignIn,
+		(actions) => actions.connectViewState.openSignIn,
 	);
 	const openSignUp = useStoreActions(
-		(actions) => actions.connectView.openSignUp,
+		(actions) => actions.connectViewState.openSignUp,
 	);
 
 	return (

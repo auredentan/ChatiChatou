@@ -1,28 +1,28 @@
 import userModel, { User } from "./user";
-import streamView, { StreamView } from "./streamView";
-import globalState, { Global } from "./global";
+import streamViewState, { StreamViewState } from "./streamView";
+import globalState, { GlobalState } from "./global";
 
 import { IUserService } from "services";
-import connectView, { ConnectView } from './connectView';
+import connectViewState, { ConnectViewState } from './connectView';
 
 export interface Injections {
   userService: IUserService
 }
 
 export interface StoreModel {
-  globalState: Global;
+  globalState: GlobalState;
   user: User;
 
-  streamView: StreamView;
-  connectView: ConnectView
+  streamViewState: StreamViewState;
+  connectViewState: ConnectViewState
 }
 
 const storeModel: StoreModel = {
   globalState: globalState,
   user: userModel,
 
-  streamView: streamView,
-  connectView: connectView
+  streamViewState: streamViewState,
+  connectViewState: connectViewState
 };
 
 export default storeModel;

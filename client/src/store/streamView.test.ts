@@ -2,7 +2,7 @@ import { createStore } from 'easy-peasy'
 
 import streamView from "./streamView"
 
-test('toggle sidebar', async () => {
+test('close and open chat', async () => {
     // arrange
     const store = createStore(streamView);
 

@@ -16,14 +16,14 @@ const TabPanel: React.FC<TabPanelProps> = ({ value, index, children }) => {
 
 const ConnectModal: React.FC = () => {
 	const { isConnectModalOpen, choosenTab } = useStoreState(
-		(state) => state.connectView,
+		(state) => state.connectViewState,
 	);
 
 	const setIsConnectModalOpen = useStoreActions(
-		(actions) => actions.connectView.setIsConnectModalOpen,
+		(actions) => actions.connectViewState.setIsConnectModalOpen,
 	);
 	const setSelectedTab = useStoreActions(
-		(actions) => actions.connectView.setTab,
+		(actions) => actions.connectViewState.setTab,
 	);
 
 	return (

@@ -1,14 +1,23 @@
-import React from "react"
+import React from 'react';
 
-import { LeftSidebar } from "components"
+import { useStoreState } from 'hooks';
+import { LeftSidebar } from 'components';
 
 const HomeView = () => {
-    return(
-        <div>
-            Home view
-            <LeftSidebar />
-        </div>
-    )
-}
+	const isLeftSidebarOpen = useStoreState(
+		(state) => state.globalState.leftSidebarIsOpen,
+	);
 
-export default HomeView
+	return (
+		<div
+			style={{
+                display: 'flex'
+            }}
+		>
+			<LeftSidebar />
+			Home view
+		</div>
+	);
+};
+
+export default HomeView;
