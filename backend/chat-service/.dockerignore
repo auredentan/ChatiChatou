@@ -1,0 +1,7 @@
+**/*.pyc
+**/*_cache
+
+.*
+doc
+htmlcov
+venv

@@ -1,0 +1,15 @@
+services:
+
+  redis-chat:
+    container_name: twitch-clone-redis-chat
+    image: redis:5
+    ports:
+      - "6379"
+    healthcheck:
+      test:
+        - "CMD"
+        - "redis-cli"
+        - "ping"
+      interval: 30s
+      timeout: 10s
+      retries: 3
