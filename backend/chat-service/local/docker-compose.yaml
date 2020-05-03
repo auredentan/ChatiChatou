@@ -1,10 +1,12 @@
+version: "3.2"
+
 services:
 
-  redis-chat:
+  redischat:
     container_name: twitch-clone-redis-chat
-    image: redis:5
+    image: redis:alpine
     ports:
-      - "6379"
+      - "6379:6379"
     healthcheck:
       test:
         - "CMD"

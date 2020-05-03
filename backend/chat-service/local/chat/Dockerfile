@@ -6,4 +6,4 @@ EXPOSE 80
 
 COPY ./chat /chat
 
-CMD ["uvicorn", "app.main:create_app()", "--host", "0.0.0.0", "--port", "80"]
+CMD ["uvicorn", "app.chat.main:create_app()", "--host", "0.0.0.0", "--port", "8082"]
