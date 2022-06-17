@@ -16,7 +16,7 @@ actix-rt = "1.0.0"
 argonautica = "0.2.0"
 chrono = { version = "0.4.6", features = ["serde"] }
 derive_more = "0.99.0"
-diesel = { version = "1.4.2", features = ["postgres", "uuidv07", "r2d2", "chrono"] }
+diesel = { version = "1.4.6", features = ["postgres", "uuidv07", "r2d2", "chrono"] }
 dotenv = "0.15"
 futures = "0.3.1"
 r2d2 = "0.8"
